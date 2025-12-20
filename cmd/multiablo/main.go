@@ -131,6 +131,15 @@ func handleCloserLoop(stopChan chan struct{}) {
 
 // agentKillerLoop continuously monitors and kills Agent.exe processes
 func agentKillerLoop(stopChan chan struct{}) {
+	// Execute once immediately on startup
+	running, err := process.IsProcessRunning(d2r.AgentProcessName)
+	if err == nil && running {
+		killedCount, err := process.KillProcessesByName(d2r.AgentProcessName)
+		if err == nil && killedCount > 0 {
+			logger.Info("Terminated "+d2r.AgentProcessName+" processes", zap.Int("count", killedCount))
+		}
+	}
+
 	ticker := time.NewTicker(10 * time.Second) // Check every 10 second
 	defer ticker.Stop()
 
