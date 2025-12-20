@@ -84,6 +84,11 @@ simultaneously by continuously monitoring and removing the "DiabloII Check For O
 }
 
 func init() {
+	// Disable Cobra's mousetrap feature on Windows
+	// By default, Cobra shows a warning when launched from File Explorer instead of cmd.exe
+	// Setting this to empty string allows the program to run normally from File Explorer
+	// See: https://github.com/spf13/cobra/issues/844
+	cobra.MousetrapHelpText = ""
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose output")
 }
 
