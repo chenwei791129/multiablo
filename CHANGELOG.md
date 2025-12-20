@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/chenwei791129/multiablo/compare/v1.0.0...v1.0.1) (2025-12-20)
+
+
+### Bug Fixes
+
+* disable Cobra's mousetrap warning on Windows ([04c8be7](https://github.com/chenwei791129/multiablo/commit/04c8be7fc2500c360b54c2e1490a7ca96b43388d))
+
 ## 1.0.0 (2025-12-20)
 
 
