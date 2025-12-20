@@ -1,5 +1,7 @@
 # Multiablo
 
+[English](README.md) | [繁體中文](README.zh-TW.md)
+
 A D2R (Diablo II: Resurrected) multi-instance helper for Windows, written in Go.
 
 ## Overview
