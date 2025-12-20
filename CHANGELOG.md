@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/chenwei791129/multiablo/compare/v1.0.1...v1.1.0) (2025-12-20)
+
+
+### Features
+
+* execute Agent.exe termination immediately on startup ([ba5ae2c](https://github.com/chenwei791129/multiablo/commit/ba5ae2c3a8ab8cac0a740c9dcf3f5f09f5edca87))
+
 ## [1.0.1](https://github.com/chenwei791129/multiablo/compare/v1.0.0...v1.0.1) (2025-12-20)
 
 
