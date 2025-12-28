@@ -72,3 +72,25 @@ func IsProcessRunning(name string) (bool, error) {
 
 	return len(processes) > 0, nil
 }
+
+// GetProcessExecutablePath retrieves the full executable path of a process by PID
+func GetProcessExecutablePath(pid uint32) (string, error) {
+	// Open the process with QUERY_INFORMATION | VM_READ permissions
+	handle, err := windows.OpenProcess(windows.PROCESS_QUERY_INFORMATION|windows.PROCESS_VM_READ, false, pid)
+	if err != nil {
+		return "", fmt.Errorf("failed to open process %d: %w", pid, err)
+	}
+	defer func() {
+		_ = windows.CloseHandle(handle)
+	}()
+
+	// Query the full executable path
+	var exePath [windows.MAX_PATH]uint16
+	size := uint32(len(exePath))
+	err = windows.QueryFullProcessImageName(handle, 0, &exePath[0], &size)
+	if err != nil {
+		return "", fmt.Errorf("QueryFullProcessImageName failed for PID %d: %w", pid, err)
+	}
+
+	return syscall.UTF16ToString(exePath[:size]), nil
+}

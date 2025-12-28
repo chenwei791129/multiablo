@@ -8,6 +8,9 @@ const (
 	// AgentProcessName is the Battle.net Update Agent executable name
 	AgentProcessName = "Agent.exe"
 
+	// DefaultAgentPath is the default installation path of Agent.exe
+	DefaultAgentPath = `C:\ProgramData\Battle.net\Agent\Agent.exe`
+
 	// SingleInstanceEventName is the event handle name used by D2R to prevent multiple instances
 	// Note: The actual handle name includes a session prefix like "\Sessions\1\BaseNamedObjects\"
 	SingleInstanceEventName = "DiabloII Check For Other Instances"
