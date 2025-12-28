@@ -78,23 +78,18 @@
 
 ### Building
 ```bash
-# Standard Go build (outputs multiablo.exe in current directory)
+# Standard Go build
 go build -o multiablo.exe ./cmd/multiablo
 
-# For building with Windows resources/manifest/version info:
-# First install go-winres: go install github.com/tc-hib/go-winres@latest
-# Then run: go-winres simply --arch amd64 --in cmd/multiablo/winres/winres.json --out cmd/multiablo/
+# See "UAC and Build System Details" section for full build process with Windows resources
 ```
 
 ### Testing
 ```bash
-# Run test suite (test/test.go is a manual integration test, not automated)
+# Run unit tests
 go test ./...
 
-# Manual integration testing requires:
-# 1. Launch D2R.exe from Battle.net
-# 2. Run: go run ./test/test.go
-# This spawns background goroutines for continuous monitoring
+# See "Development Notes and Tips > Testing Workflow" for detailed integration testing steps
 ```
 
 ### Running
@@ -204,3 +199,229 @@ case <-ticker.C:
 **Phase 3 (Future)**: GUI, crash recovery, process monitoring
 
 When adding new features, maintain the layered architecture: processes → handles → actions → logging.
+
+---
+
+## Important Technical Decisions
+
+### Why Go?
+- Excellent Windows API bindings via `golang.org/x/sys/windows`
+- Single executable, no runtime dependencies
+- High performance with low memory footprint
+- Cross-compilation support for different architectures
+
+### Why Undocumented Windows APIs?
+- `NtQuerySystemInformation` and `NtQueryObject` are the only way to enumerate system handles
+- Tools like Process Explorer use these same APIs
+- Risk: Windows updates could change behavior (but historically very stable)
+- These are from `ntdll.dll` which is always present on Windows
+
+### Why Zap over Standard log?
+- Zero-allocation performance
+- Structured logging for better analysis
+- Flexible configuration options
+- Production-ready with minimal overhead
+
+### Why Cobra?
+- Industry-standard CLI framework in Go ecosystem
+- Auto-generated help and usage information
+- Easy to extend with subcommands
+- Professional CLI experience out of the box
+
+### Why Uptime-Based Agent.exe Termination?
+- Allows Battle.net launcher enough time to execute "Start Game" action
+- 7-second threshold found through testing to be optimal balance
+- Maximizes launcher availability while preventing interference
+- More intelligent than fixed-interval killing
+
+---
+
+## Known Limitations and Challenges
+
+### Platform Limitations
+1. **Windows Only**: D2R itself is Windows-only, so this is an inherent constraint
+2. **Administrator Rights Required**: Handle manipulation requires elevated privileges
+3. **Architecture Matching**: 64-bit program can only manipulate 64-bit process handles safely
+
+### API and Compatibility Risks
+1. **Handle Name Dependency**: If Blizzard changes the `DiabloII Check For Other Instances` handle name, program will fail
+2. **Undocumented API Risks**: Future Windows updates could theoretically break `NtQuerySystemInformation` behavior
+3. **Anti-Cheat Concerns**: Multi-boxing may violate game ToS; risk of account suspension (documented in README)
+
+### Technical Challenges
+1. **Handle Enumeration Deadlocks**: Querying certain handle types (especially named pipes) can cause deadlocks
+   - Current mitigation: Skip System process (PID 4)
+   - Skip handles that fail to open
+   - **TODO**: Add timeout mechanism for handle queries
+2. **Antivirus False Positives**: Handle manipulation tools are commonly flagged (expected behavior)
+
+---
+
+## UAC and Build System Details
+
+### UAC Auto-Elevation
+The program uses a Windows Manifest to automatically request administrator privileges:
+
+**Configuration** (`cmd/multiablo/winres/winres.json`):
+```json
+{
+  "RT_MANIFEST": {
+    "execution-level": "requireAdministrator"
+  }
+}
+```
+
+### Complete Build Process
+
+**1. Install Build Tools** (first time only):
+```bash
+go install github.com/tc-hib/go-winres@latest
+```
+
+**2. Generate Windows Resources**:
+```bash
+# Generate .syso files with manifest and version info
+go-winres simply --arch amd64 --in cmd/multiablo/winres/winres.json --out cmd/multiablo/
+```
+This creates `rsrc_windows_amd64.syso` in same directory as `main.go`
+
+**3. Build Executable**:
+```bash
+# Development build
+go build -o multiablo.exe ./cmd/multiablo
+
+# Release build (with optimization and version)
+go build -ldflags="-s -w -X main.version=1.0.0" -o multiablo.exe ./cmd/multiablo
+```
+
+**Important Notes**:
+- `.syso` files must be in same directory as `main.go`
+- Filename format: `rsrc_windows_{arch}.syso`
+- After modifying `winres.json`, re-run `go-winres` to regenerate
+- `.syso` files are in `.gitignore` (generated locally)
+- Go build automatically links `.syso` files during compilation
+- Result: Windows shows UAC prompt when user launches the program
+
+---
+
+## Development History Summary
+
+### 2025-12-20: Project Initialization
+- Created GitHub repository
+- Initialized Go module
+- Planned implementation approach
+
+### 2025-12-20: Core Feature Implementation (Milestone 1)
+- Implemented Windows API wrappers
+- Built handle enumeration and closing logic
+- Created process discovery layer
+- Developed main program logic with CLI
+
+### 2025-12-20: Professional Refactoring
+- Replaced `flag` with `cobra` for better CLI
+- Replaced `fmt.Println` with `zap` structured logging
+- Implemented dual logging modes (normal/verbose)
+- Disabled stack traces for cleaner output
+
+### 2025-12-20: Feature Simplification
+- Removed `--close-only` flag
+- Made program focus on handle closing only
+- User launches D2R manually via Battle.net
+- Program runs continuously in background
+
+### 2025-12-20: UAC Integration
+- Added Windows Manifest for auto-elevation
+- Integrated `go-winres` build tooling
+- Automated administrator privilege request
+
+### 2025-12-28: Intelligent Agent.exe Termination
+- Added process uptime tracking functions
+- Implemented 7-second uptime threshold for Agent.exe killing
+- Refactored into `checkAndKillAgentProcess()` helper
+- Maximized Battle.net launcher availability
+
+---
+
+## Environment Requirements
+
+### Development Environment
+- Go 1.21 or higher
+- Windows 10/11 (64-bit recommended)
+- Git for version control
+- `go-winres` tool for resource generation
+- Administrator privileges (required for testing)
+
+### Testing Requirements
+- D2R installed and configured
+- Battle.net launcher
+- Multiple Battle.net accounts (optional, for multi-instance testing)
+
+---
+
+## Reference Materials
+
+### Windows API Documentation
+- [NtQuerySystemInformation](https://learn.microsoft.com/en-us/windows/win32/api/winternl/nf-winternl-ntquerysysteminformation) - System information queries
+- [NtDuplicateObject](https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-zwduplicateobject) - Handle duplication/closing
+- [Process and Thread Functions](https://learn.microsoft.com/en-us/windows/win32/procthread/process-and-thread-functions) - Process management
+- [GetProcessTimes](https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-getprocesstimes) - Process timing information
+
+### Similar Projects (for reference)
+- [Process Hacker](https://github.com/processhacker/processhacker) - Open-source process manager (handle manipulation reference)
+- [handle.exe](https://learn.microsoft.com/en-us/sysinternals/downloads/handle) - Sysinternals handle viewer tool
+
+### Go Library Documentation
+- [golang.org/x/sys/windows](https://pkg.go.dev/golang.org/x/sys/windows) - Windows API bindings
+- [go.uber.org/zap](https://pkg.go.dev/go.uber.org/zap) - High-performance logging
+- [github.com/spf13/cobra](https://pkg.go.dev/github.com/spf13/cobra) - CLI framework
+
+---
+
+## Development Notes and Tips
+
+### Handle Enumeration Best Practices
+- Always skip System process (PID 4) to avoid deadlocks
+- Implement graceful error handling for inaccessible handles
+- Consider timeout mechanisms for slow handle queries (future enhancement)
+- Use dynamic buffer sizing for `NtQuerySystemInformation` results
+
+### Testing Workflow
+1. Launch D2R from Battle.net launcher (first instance)
+2. Run `multiablo.exe` with verbose flag: `multiablo.exe -v`
+3. Verify handle closing messages appear in log
+4. Launch second D2R instance from Battle.net launcher
+5. Confirm both instances run simultaneously
+6. Check Agent.exe termination behavior with uptime logging
+
+---
+
+## Project Status
+
+**Current Version**: 1.0.0+
+**Status**: ✅ Core features complete and tested
+**License**: MIT License
+**Repository**: https://github.com/chenwei791129/multiablo
+
+### Completed Features
+- ✅ Automatic D2R.exe process detection
+- ✅ System-wide handle enumeration
+- ✅ Single-instance handle closing
+- ✅ Multiple D2R instance support
+- ✅ UAC auto-elevation
+- ✅ Structured logging with zap
+- ✅ Professional CLI with cobra
+- ✅ Intelligent Agent.exe termination with uptime checking
+- ✅ Comprehensive documentation
+
+### Future Enhancements (Consideration)
+- [ ] Automatic D2R launch feature
+- [ ] Configuration file support (YAML/JSON)
+- [ ] GUI interface (fyne or walk)
+- [ ] Process crash recovery
+- [ ] Multi-window management (auto-arrange)
+- [ ] GitHub Actions CI/CD for releases
+
+---
+
+**Last Updated**: 2025-12-28
+**Maintained By**: chenwei791129
