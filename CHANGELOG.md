@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/chenwei791129/multiablo/compare/v1.1.0...v1.2.0) (2025-12-28)
+
+
+### Features
+
+* add uptime check before killing Agent.exe ([970d777](https://github.com/chenwei791129/multiablo/commit/970d777158c5099e50a530776a57ea756c244f05))
+
 ## [1.1.0](https://github.com/chenwei791129/multiablo/compare/v1.0.1...v1.1.0) (2025-12-20)
 
 
