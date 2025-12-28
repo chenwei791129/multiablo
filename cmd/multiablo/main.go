@@ -129,18 +129,31 @@ func handleCloserLoop(stopChan chan struct{}) {
 	}
 }
 
-// agentKillerLoop continuously monitors and kills Agent.exe processes
-func agentKillerLoop(stopChan chan struct{}) {
-	// Execute once immediately on startup
+// checkAndKillAgentProcess checks if Agent.exe is running and kills it if uptime exceeds threshold
+func checkAndKillAgentProcess() {
 	running, err := process.IsProcessRunning(d2r.AgentProcessName)
-	if err == nil && running {
-		killedCount, err := process.KillProcessesByName(d2r.AgentProcessName)
-		if err == nil && killedCount > 0 {
-			logger.Info("Terminated "+d2r.AgentProcessName+" processes", zap.Int("count", killedCount))
-		}
+	if err != nil {
+		logger.Debug("Error checking Agent.exe", zap.Error(err))
+		return
 	}
 
-	ticker := time.NewTicker(10 * time.Second) // Check every 10 second
+	if !running {
+		return
+	}
+
+	// Kill all Agent.exe processes if uptime exceeds threshold
+	uptime, _ := process.GetProcessOldestUptimeByName(d2r.AgentProcessName)
+	if uptime >= (time.Second * 7) {
+		killedCount, err := process.KillProcessesByName(d2r.AgentProcessName)
+		if err == nil && killedCount > 0 {
+			logger.Info(fmt.Sprintf("Terminated %s %d processes", d2r.AgentProcessName, killedCount))
+		}
+	}
+}
+
+// agentKillerLoop continuously monitors and kills Agent.exe processes
+func agentKillerLoop(stopChan chan struct{}) {
+	ticker := time.NewTicker(time.Second) // Check every 10 second
 	defer ticker.Stop()
 
 	logger.Info("Monitoring " + d2r.AgentProcessName + " processes for termination...")
@@ -151,24 +164,7 @@ func agentKillerLoop(stopChan chan struct{}) {
 			logger.Info("Stopping Agent.exe monitor...")
 			return
 		case <-ticker.C:
-			// Check if Agent.exe is running
-			running, err := process.IsProcessRunning(d2r.AgentProcessName)
-			if err != nil {
-				logger.Debug("Error checking Agent.exe", zap.Error(err))
-				continue
-			}
-
-			if running {
-				// Kill all Agent.exe processes
-				killedCount, err := process.KillProcessesByName(d2r.AgentProcessName)
-				if err != nil {
-					logger.Debug("Failed to kill Agent.exe", zap.Error(err))
-					continue
-				}
-				if killedCount > 0 {
-					logger.Info("Terminated "+d2r.AgentProcessName+" processes", zap.Int("count", killedCount))
-				}
-			}
+			checkAndKillAgentProcess()
 		}
 	}
 }
