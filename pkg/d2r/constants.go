@@ -1,3 +1,4 @@
+// Package d2r provides constants and definitions specific to Diablo II: Resurrected.
 package d2r
 
 const (

@@ -1,3 +1,5 @@
+// Package handle provides utilities for enumerating and manipulating
+// Windows handles in remote processes.
 package handle
 
 import (
