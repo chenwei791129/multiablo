@@ -132,29 +132,26 @@ func handleCloserLoop(stopChan chan struct{}) {
 // checkAndKillAgentProcess checks if Agent.exe is running and kills it if uptime exceeds threshold
 // It also relaunches Agent.exe immediately after killing to prevent Battle.net launcher lockup
 func checkAndKillAgentProcess() {
-	running, err := process.IsProcessRunning(d2r.AgentProcessName)
+	// Find all Agent.exe processes
+	processes, err := process.FindProcessesByName(d2r.AgentProcessName)
 	if err != nil {
-		logger.Debug("Error checking Agent.exe", zap.Error(err))
+		logger.Debug("Error finding Agent.exe", zap.Error(err))
 		return
 	}
 
-	if !running {
+	if len(processes) == 0 {
 		return
 	}
 
 	// Kill all Agent.exe processes if uptime exceeds threshold
 	uptime, _ := process.GetProcessOldestUptimeByName(d2r.AgentProcessName)
 	if uptime >= (time.Second * 7) {
-		// Get Agent.exe path before killing it
+		// Get Agent.exe path before killing it (from the first process)
 		agentPath := ""
-		processes, err := process.FindProcessesByName(d2r.AgentProcessName)
-		if err == nil && len(processes) > 0 {
-			// Try to get the path from the first process
-			path, err := process.GetProcessExecutablePath(processes[0].PID)
-			if err == nil {
-				agentPath = path
-				logger.Debug("Retrieved Agent.exe path", zap.String("path", agentPath))
-			}
+		path, err := process.GetProcessExecutablePath(processes[0].PID)
+		if err == nil {
+			agentPath = path
+			logger.Debug("Retrieved Agent.exe path", zap.String("path", agentPath))
 		}
 
 		// If we couldn't get the path, use the default

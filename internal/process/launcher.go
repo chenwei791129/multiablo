@@ -15,7 +15,7 @@ func LaunchProcess(executablePath string) error {
 
 	// Create command to launch the process
 	cmd := exec.Command(executablePath)
-	
+
 	// Start the process in detached mode (don't wait for it to finish)
 	err := cmd.Start()
 	if err != nil {

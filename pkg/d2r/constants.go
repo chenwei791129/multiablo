@@ -9,6 +9,8 @@ const (
 	AgentProcessName = "Agent.exe"
 
 	// DefaultAgentPath is the default installation path of Agent.exe
+	// This is used as a fallback when the running process path cannot be determined
+	// The actual path is retrieved dynamically from the running process when available
 	DefaultAgentPath = `C:\ProgramData\Battle.net\Agent\Agent.exe`
 
 	// SingleInstanceEventName is the event handle name used by D2R to prevent multiple instances
