@@ -14,7 +14,7 @@ Multiablo 的工作方式：
 1. 持續監控正在運行的 D2R.exe 進程
 2. 自動偵測並關閉 `DiabloII Check For Other Instances` 事件控制碼
 3. 讓您可以隨時從 Battle.net 啟動器啟動多個 D2R 實例
-4. 持續監控並終止可能干擾多開運作的 `Agent.exe` 進程
+4. 監控 `Agent.exe` 進程，僅在其運行超過 7 秒後才終止，最大化 Battle.net 啟動器執行「開始遊戲」的可用時間
 
 ## 使用說明
 

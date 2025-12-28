@@ -16,7 +16,7 @@ Multiablo works by:
 1. Continuously monitoring for running D2R.exe processes
 2. Automatically detecting and closing the `DiabloII Check For Other Instances` Event Handle
 3. Allowing you to launch multiple D2R instances from Battle.net launcher at any time
-4. Continuously monitoring and terminating `Agent.exe` processes that may interfere with multi-instance operation
+4. Monitoring `Agent.exe` processes and terminating them only after 7 seconds of uptime, maximizing Battle.net launcher availability for starting games
 
 ## Usage
 
