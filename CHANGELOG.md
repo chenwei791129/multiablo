@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/chenwei791129/multiablo/compare/v1.2.0...v1.3.0) (2025-12-31)
+
+
+### Features
+
+* prevent Battle.net launcher lockup by relaunching Agent.exe after termination ([#6](https://github.com/chenwei791129/multiablo/issues/6)) ([dce72be](https://github.com/chenwei791129/multiablo/commit/dce72be375923c4caf83411da7a21421a90f768f))
+
 ## [1.2.0](https://github.com/chenwei791129/multiablo/compare/v1.1.0...v1.2.0) (2025-12-28)
 
 
