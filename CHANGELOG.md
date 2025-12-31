@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/chenwei791129/multiablo/compare/v1.3.0...v1.3.1) (2025-12-31)
+
+
+### Bug Fixes
+
+* prevent console window minimization when launching Agent.exe ([#9](https://github.com/chenwei791129/multiablo/issues/9)) ([e05e55c](https://github.com/chenwei791129/multiablo/commit/e05e55cdd20e3864924c0863932c350b2ead0988))
+
 ## [1.3.0](https://github.com/chenwei791129/multiablo/compare/v1.2.0...v1.3.0) (2025-12-31)
 
 
