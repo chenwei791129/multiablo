@@ -22,37 +22,11 @@ Multiablo works by:
 
 ### Basic Usage
 
-1. **Start D2R** from Battle.net launcher
-2. **Run multiablo.exe**
+1. **Run multiablo.exe**
+2. **Start D2R** from Battle.net launcher
 3. **Launch additional D2R instances** from other Battle.net launcher!
 
-### Command-Line Options
-
-```
-> multiablo.exe -h
-Multiablo enables you to run multiple instances of Diablo II: Resurrected
-simultaneously by continuously monitoring and removing the "DiabloII Check For Other Instances" and "Agent.exe".
-
-Usage:
-  multiablo [flags]
-
-Flags:
-  -h, --help      help for multiablo
-  -v, --verbose   Enable verbose output
-```
-
-### Example Output
-
-```
-2025-12-21T00:11:09.963+0800    INFO    Multiablo - D2R Multi-Instance Helper
-2025-12-21T00:11:09.983+0800    INFO    ======================================
-2025-12-21T00:11:09.983+0800    INFO
-2025-12-21T00:11:09.984+0800    INFO    Starting background monitors...
-2025-12-21T00:11:09.984+0800    INFO    Monitoring Agent.exe processes for termination...
-2025-12-21T00:11:09.984+0800    INFO    Monitoring D2R.exe processes for handle restrictions...
-2025-12-21T00:11:09.994+0800    INFO
-2025-12-21T00:11:09.994+0800    INFO    Press Enter to exit...
-```
+The application will automatically start monitoring when launched. You can see the status of detected processes and handle operations in the GUI.
 
 ### Antivirus False Positive
 

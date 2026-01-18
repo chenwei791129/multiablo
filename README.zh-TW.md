@@ -1,5 +1,7 @@
 # Multiablo
 
+[English](README.md) | [繁體中文](README.zh-TW.md)
+
 適用於 Windows 的《暗黑破壞神 II：獄火重生》(D2R) 多開輔助工具，使用 Go 語言開發。
 
 ## 概述
@@ -20,37 +22,11 @@ Multiablo 的工作方式：
 
 ### 基本用法
 
-1. **從 Battle.net 啟動器啟動 D2R**
-2. **執行 multiablo.exe**
+1. **執行 multiablo.exe**
+2. **從 Battle.net 啟動器啟動 D2R**
 3. **從其他 Battle.net 啟動器啟動額外的 D2R 實例**！
 
-### 命令列選項
-
-```
-> multiablo.exe -h
-Multiablo enables you to run multiple instances of Diablo II: Resurrected
-simultaneously by continuously monitoring and removing the "DiabloII Check For Other Instances" and "Agent.exe".
-
-Usage:
-  multiablo [flags]
-
-Flags:
-  -h, --help      help for multiablo
-  -v, --verbose   Enable verbose output
-```
-
-### 輸出範例
-
-```
-2025-12-21T00:11:09.963+0800    INFO    Multiablo - D2R Multi-Instance Helper
-2025-12-21T00:11:09.983+0800    INFO    ======================================
-2025-12-21T00:11:09.983+0800    INFO
-2025-12-21T00:11:09.984+0800    INFO    Starting background monitors...
-2025-12-21T00:11:09.984+0800    INFO    Monitoring Agent.exe processes for termination...
-2025-12-21T00:11:09.984+0800    INFO    Monitoring D2R.exe processes for handle restrictions...
-2025-12-21T00:11:09.994+0800    INFO
-2025-12-21T00:11:09.994+0800    INFO    Press Enter to exit...
-```
+應用程式啟動後會自動開始監控。您可以在 GUI 介面中查看偵測到的進程狀態和控制碼操作結果。
 
 ### 防毒軟體誤報
 

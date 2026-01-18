@@ -37,13 +37,23 @@ jobs:
           go-version-file: go.mod
           cache: false
 
+      - name: Install MinGW-w64 for Windows cross-compilation
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-mingw-w64-x86-64
+
+      - name: Generate Windows resources
+        working-directory: cmd/multiablo
+        run: go tool go-winres make --arch amd64
+
       - name: Build binary
         env:
           GOOS: windows
           GOARCH: amd64
-          CGO_ENABLED: 0
+          CGO_ENABLED: 1
+          CC: x86_64-w64-mingw32-gcc
         run: |
-          go build -ldflags="-s -w -X main.version=${{ needs.release-please.outputs.tag_name }}" -o multiablo.exe ./cmd/multiablo
+          go build -ldflags="-s -w -H windowsgui" -o multiablo.exe ./cmd/multiablo
 
       - name: Upload Release Asset
         env:
