@@ -1,3 +1,4 @@
+---
 name: Translate README
 
 on:
@@ -29,22 +30,25 @@ jobs:
             file: "README.ja.md"
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Translate README to ${{ matrix.language.name }}
         uses: FidelusAleksander/ai-translate-action@v1
         id: translate
         with:
           text-file: "README.md"
           target-language: ${{ matrix.language.code }}
-          custom-instructions: "Keep technical terms and code snippets in English. Don't translate URLs, file paths, or code blocks. Preserve markdown formatting."
-      
+          custom-instructions: >-
+            Keep technical terms and code snippets in English.
+            Don't translate URLs, file paths, or code blocks.
+            Preserve markdown formatting.
+
       - name: Save translation
         run: |
           mkdir -p docs/readme
           echo "$TRANSLATED_TEXT" > docs/readme/${{ matrix.language.file }}
         env:
           TRANSLATED_TEXT: ${{ steps.translate.outputs.translated-text }}
-      
+
       - name: Upload translation artifact
         uses: actions/upload-artifact@v4
         with:
@@ -56,12 +60,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Download all translation artifacts
         uses: actions/download-artifact@v4
         with:
           path: docs/readme
-      
+
       - name: Move files from artifact subdirectories
         run: |
           cd docs/readme
@@ -72,7 +76,7 @@ jobs:
             fi
           done
           ls -la
-      
+
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
@@ -80,9 +84,10 @@ jobs:
           title: "docs: update README translations"
           body: |
             This PR updates all translations of the README.
-            
-            Changes were automatically generated using the [ai-translate-action](https://github.com/FidelusAleksander/ai-translate-action).
-            
+
+            Changes were automatically generated using the
+            [ai-translate-action](https://github.com/FidelusAleksander/ai-translate-action).
+
             ## Translated Languages
             - Traditional Chinese (zh-TW)
             - Simplified Chinese (zh-CN)
