@@ -1,4 +1,4 @@
-# Multiablo
+# D2R MultiAblo -《暗黑破壞神 II：獄火重生》多開輔助工具
 
 [English](README.md) | [繁體中文](README.zh-TW.md)
 

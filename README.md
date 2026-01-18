@@ -1,4 +1,4 @@
-# Multiablo
+# D2R MultiAblo - Diablo 2 Resurrected Multi-Instance Tool
 
 [English](README.md) | [繁體中文](README.zh-TW.md)
 
