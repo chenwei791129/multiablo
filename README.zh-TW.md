@@ -4,6 +4,12 @@
 
 適用於 Windows 的《暗黑破壞神 II：獄火重生》(D2R) 多開輔助工具，使用 Go 語言開發。
 
+## 下載
+
+您可以從 [Releases](https://github.com/chenwei791129/multiablo/releases) 頁面下載最新版本的 Multiablo，或使用下方的直接下載連結：
+
+[🚀 下載最新版 multiablo.exe](https://github.com/chenwei791129/multiablo/releases/latest/download/multiablo.exe)
+
 ## 概述
 
 Multiablo 讓您能夠同時運行多個《暗黑破壞神 II：獄火重生》實例，透過持續監控並關閉 D2R 用來防止多開的單一實例事件控制碼。只需在背景執行此工具，您就可以從 Battle.net 啟動器啟動多個 D2R 實例，無需任何額外步驟。

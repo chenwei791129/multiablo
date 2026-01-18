@@ -4,6 +4,12 @@
 
 A D2R (Diablo II: Resurrected) multi-instance helper for Windows, written in Go.
 
+## Download
+
+You can download the latest version of Multiablo from the [Releases](https://github.com/chenwei791129/multiablo/releases) page or use the direct link below:
+
+[🚀 Download Latest multiablo.exe](https://github.com/chenwei791129/multiablo/releases/latest/download/multiablo.exe)
+
 ## Overview
 
 Multiablo enables you to run multiple instances of Diablo II: Resurrected simultaneously by continuously monitoring and closing the single-instance Event Handle that D2R uses to prevent multi-launching. Simply run this tool in the background, and you can launch multiple D2R instances from the Battle.net launcher without any additional steps.
