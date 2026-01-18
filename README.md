@@ -1,6 +1,6 @@
 # D2R MultiAblo - Diablo 2 Resurrected Multi-Instance Tool
 
-[English](README.md) | [繁體中文](README.zh-TW.md)
+[English](README.md) | [繁體中文](docs/readme/README.zh-TW.md) | [简体中文](docs/readme/README.zh-CN.md) | [日本語](docs/readme/README.ja.md)
 
 A D2R (Diablo II: Resurrected) multi-instance helper for Windows, written in Go.
 
