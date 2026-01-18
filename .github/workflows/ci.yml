@@ -5,35 +5,10 @@ on:
     branches:
       - '**'
       - '!main'
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
-    name: Build Check
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version-file: go.mod
-          cache: true
-
-      - name: Install MinGW-w64 for Windows cross-compilation
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y gcc-mingw-w64-x86-64
-
-      - name: Generate Windows resources
-        working-directory: cmd/multiablo
-        run: go tool go-winres make --arch amd64
-
-      - name: Build binary
-        env:
-          GOOS: windows
-          GOARCH: amd64
-          CGO_ENABLED: 1
-          CC: x86_64-w64-mingw32-gcc
-        run: |
-          go build -ldflags="-s -w -H windowsgui" -o multiablo.exe ./cmd/multiablo
+    uses: ./.github/workflows/build.yml
