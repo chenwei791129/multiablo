@@ -23,28 +23,26 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           release-type: go
 
-  build-and-upload:
+  # Call the shared build workflow
+  build:
     needs: release-please
+    if: ${{ needs.release-please.outputs.release_created }}
+    uses: ./.github/workflows/build.yml
+
+  # Download the artifact and upload it to the release
+  upload-release-asset:
+    needs: [release-please, build]
     if: ${{ needs.release-please.outputs.release_created }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Go
-        uses: actions/setup-go@v5
+      - name: Download Binary Artifact
+        uses: actions/download-artifact@v4
         with:
-          go-version-file: go.mod
-          cache: false
-
-      - name: Build binary
-        env:
-          GOOS: windows
-          GOARCH: amd64
-          CGO_ENABLED: 0
-        run: |
-          go build -ldflags="-s -w -X main.version=${{ needs.release-please.outputs.tag_name }}" -o multiablo.exe ./cmd/multiablo
-
+          name: multiablo-binary
+          
       - name: Upload Release Asset
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

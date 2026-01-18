@@ -55,9 +55,11 @@ func findHandlesByName(processID uint32, targetName string) ([]HandleInfo, error
 	handleInfo := (*SystemExtendedHandleInformationEx)(unsafe.Pointer(&buffer[0]))
 	numberOfHandles := int(handleInfo.NumberOfHandles)
 
-	// Get pointer to the first handle entry
-	handlesPtr := uintptr(unsafe.Pointer(&handleInfo.Handles[0]))
-	handleEntrySize := unsafe.Sizeof(SystemHandleTableEntryInfoEx{})
+	// Use unsafe.Slice to create a slice of entries from the raw pointer
+	// This is safe because we know the buffer contains this many entries
+	// and it avoids manual pointer arithmetic that trips up checkptr
+	firstEntryPtr := (*SystemHandleTableEntryInfoEx)(unsafe.Pointer(&handleInfo.Handles[0]))
+	entries := unsafe.Slice(firstEntryPtr, numberOfHandles)
 
 	// Open the target process once
 	processHandle, err := windows.OpenProcess(
@@ -77,8 +79,7 @@ func findHandlesByName(processID uint32, targetName string) ([]HandleInfo, error
 
 	// Only process handles belonging to the target process
 	for i := 0; i < numberOfHandles; i++ {
-		entryPtr := handlesPtr + uintptr(i)*handleEntrySize
-		entry := (*SystemHandleTableEntryInfoEx)(unsafe.Pointer(entryPtr))
+		entry := &entries[i]
 
 		// Only process handles from the target process
 		if uint32(entry.UniqueProcessID) != processID {
@@ -130,7 +131,10 @@ func findHandlesByName(processID uint32, targetName string) ([]HandleInfo, error
 
 // queryObjectType queries the type name of a handle
 func queryObjectType(handle windows.Handle) string {
-	buffer := make([]byte, 1024)
+	// Allocate aligned buffer (using []uint64 ensures 8-byte alignment)
+	// We need 1024 bytes, so 128 uint64s
+	alignedBuf := make([]uint64, 128)
+	buffer := unsafe.Slice((*byte)(unsafe.Pointer(&alignedBuf[0])), len(alignedBuf)*8)
 	var returnLength uint32
 
 	err := ntQueryObject(
@@ -151,8 +155,10 @@ func queryObjectType(handle windows.Handle) string {
 
 // queryObjectName queries the name of a handle with timeout protection
 func queryObjectName(handle windows.Handle) string {
-	// Use a larger buffer for names
-	buffer := make([]byte, 4096)
+	// Allocate aligned buffer (using []uint64 ensures 8-byte alignment)
+	// We need 4096 bytes, so 512 uint64s
+	alignedBuf := make([]uint64, 512)
+	buffer := unsafe.Slice((*byte)(unsafe.Pointer(&alignedBuf[0])), len(alignedBuf)*8)
 	var returnLength uint32
 
 	// Note: ntQueryObject can hang on certain handles (e.g., named pipes)
@@ -168,7 +174,11 @@ func queryObjectName(handle windows.Handle) string {
 	if err != nil {
 		// If buffer is too small, try again with larger buffer
 		if errno, ok := err.(syscall.Errno); ok && errno == StatusInfoLengthMismatch {
-			buffer = make([]byte, returnLength)
+			// Align the new buffer as well
+			requiredUint64s := (returnLength + 7) / 8
+			alignedBuf = make([]uint64, requiredUint64s)
+			buffer = unsafe.Slice((*byte)(unsafe.Pointer(&alignedBuf[0])), len(alignedBuf)*8)
+
 			err = ntQueryObject(
 				handle,
 				ObjectNameInformation,
