@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/chenwei791129/multiablo/compare/v1.3.1...v2.0.0) (2026-01-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* The application now uses a graphical user interface instead of command-line interface. CLI flags (-v, --verbose) have been removed.
+
+### Features
+
+* replace CLI interface with Fyne GUI ([#11](https://github.com/chenwei791129/multiablo/issues/11)) ([15f05b4](https://github.com/chenwei791129/multiablo/commit/15f05b42f9e8ac683082556d4577983038a44a9f))
+
 ## [1.3.1](https://github.com/chenwei791129/multiablo/compare/v1.3.0...v1.3.1) (2025-12-31)
 
 
