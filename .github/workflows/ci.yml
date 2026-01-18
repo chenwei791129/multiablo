@@ -4,10 +4,7 @@ on:
   push:
     branches:
       - '**'
-      - '!main' # 防止在 main 上重複執行（main 交給 release-please 處理，或者由 PR merge 觸發）
-  pull_request:
-    branches:
-      - main
+      - '!main'
 
 jobs:
   build:
