@@ -3,10 +3,12 @@ package gui
 import (
 	"fmt"
 	"strings"
+	"sync"
 	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 )
@@ -32,11 +34,20 @@ type MainWindow struct {
 	agentKilledLabel *widget.Label
 
 	// UI Components - Log
-	logText *widget.RichText
+	logLabel *widget.Label
 
 	// UI Components - Controls
 	startStopBtn *widget.Button
 	clearLogBtn  *widget.Button
+
+	// Data Binding
+	d2rCountBinding     binding.String
+	d2rProcessBinding   binding.String
+	d2rHandlesBinding   binding.String
+	agentCountBinding   binding.String
+	agentProcessBinding binding.String
+	agentKilledBinding  binding.String
+	logBinding          binding.String
 
 	// State
 	isMonitoring bool
@@ -44,6 +55,9 @@ type MainWindow struct {
 
 	// Monitor
 	monitor *Monitor
+
+	// Synchronization
+	mu sync.Mutex
 }
 
 // NewMainWindow creates and configures the main window
@@ -56,9 +70,22 @@ func NewMainWindow(app fyne.App) *MainWindow {
 	w.window.Resize(fyne.NewSize(windowWidth, windowHeight))
 	w.window.CenterOnScreen()
 
+	// Initialize bindings
+	w.d2rCountBinding = binding.NewString()
+	w.d2rProcessBinding = binding.NewString()
+	w.d2rHandlesBinding = binding.NewString()
+	w.agentCountBinding = binding.NewString()
+	w.agentProcessBinding = binding.NewString()
+	w.agentKilledBinding = binding.NewString()
+	w.logBinding = binding.NewString()
+
 	// Handle window close
 	w.window.SetCloseIntercept(func() {
-		if w.monitor != nil && w.isMonitoring {
+		w.mu.Lock()
+		monitoring := w.isMonitoring
+		w.mu.Unlock()
+
+		if w.monitor != nil && monitoring {
 			w.monitor.Stop()
 		}
 		w.window.Close()
@@ -71,10 +98,15 @@ func NewMainWindow(app fyne.App) *MainWindow {
 // createUI builds the user interface
 func (w *MainWindow) createUI() {
 	// D2R.exe monitoring section
-	w.d2rCountLabel = widget.NewLabel("Detected processes: 0")
-	w.d2rProcessList = widget.NewLabel("No D2R.exe processes detected")
+	w.d2rCountBinding.Set("Detected processes: 0")
+	w.d2rCountLabel = widget.NewLabelWithData(w.d2rCountBinding)
+
+	w.d2rProcessBinding.Set("No D2R.exe processes detected")
+	w.d2rProcessList = widget.NewLabelWithData(w.d2rProcessBinding)
 	w.d2rProcessList.Wrapping = fyne.TextWrapWord
-	w.d2rHandlesClosedLabel = widget.NewLabel("Total handles closed: 0")
+
+	w.d2rHandlesBinding.Set("Total handles closed: 0")
+	w.d2rHandlesClosedLabel = widget.NewLabelWithData(w.d2rHandlesBinding)
 
 	d2rCard := widget.NewCard("D2R.exe Monitor", "",
 		container.NewVBox(
@@ -85,10 +117,15 @@ func (w *MainWindow) createUI() {
 	)
 
 	// Agent.exe monitoring section
-	w.agentCountLabel = widget.NewLabel("Detected processes: 0")
-	w.agentProcessList = widget.NewLabel("No Agent.exe processes detected")
+	w.agentCountBinding.Set("Detected processes: 0")
+	w.agentCountLabel = widget.NewLabelWithData(w.agentCountBinding)
+
+	w.agentProcessBinding.Set("No Agent.exe processes detected")
+	w.agentProcessList = widget.NewLabelWithData(w.agentProcessBinding)
 	w.agentProcessList.Wrapping = fyne.TextWrapWord
-	w.agentKilledLabel = widget.NewLabel("Total processes terminated: 0")
+
+	w.agentKilledBinding.Set("Total processes terminated: 0")
+	w.agentKilledLabel = widget.NewLabelWithData(w.agentKilledBinding)
 
 	agentCard := widget.NewCard("Agent.exe Monitor", "",
 		container.NewVBox(
@@ -99,10 +136,12 @@ func (w *MainWindow) createUI() {
 	)
 
 	// Log section with scroll
-	w.logText = widget.NewRichText()
-	w.logText.Wrapping = fyne.TextWrapWord
+	w.logLabel = widget.NewLabelWithData(w.logBinding)
+	w.logLabel.Wrapping = fyne.TextWrapWord
+	// Use TextStyle to simulate monospace if desired, or keep default
+	// w.logLabel.TextStyle = fyne.TextStyle{Monospace: true}
 
-	logScroll := container.NewScroll(w.logText)
+	logScroll := container.NewScroll(w.logLabel)
 	logScroll.SetMinSize(fyne.NewSize(600, 200))
 
 	logCard := widget.NewCard("Activity Log", "", logScroll)
@@ -138,7 +177,7 @@ func (w *MainWindow) createUI() {
 
 	// Initial log message
 	w.appendLog("Multiablo GUI started")
-	w.appendLog("Click 'Start Monitoring' to begin")
+	w.appendLog("Monitoring will start automatically...")
 }
 
 // Show displays the window
@@ -148,17 +187,18 @@ func (w *MainWindow) Show() {
 
 // StartMonitoringAutomatically starts monitoring when the app launches
 func (w *MainWindow) StartMonitoringAutomatically() {
-	// Auto-start monitoring after a brief delay to let UI render
-	go func() {
-		time.Sleep(100 * time.Millisecond)
-		w.onStartStopClick()
-	}()
+	// Execute immediately on the main thread (during startup phase)
+	// Removing goroutine and sleep prevents data races with UI initialization
+	w.onStartStopClick()
 }
 
 // onStartStopClick handles the start/stop button click
 func (w *MainWindow) onStartStopClick() {
+	w.mu.Lock()
 	if !w.isMonitoring {
 		w.isMonitoring = true
+		w.mu.Unlock()
+
 		w.startStopBtn.SetText("Stop Monitoring")
 		w.startStopBtn.Importance = widget.DangerImportance
 		w.appendLog("Monitoring started...")
@@ -170,6 +210,8 @@ func (w *MainWindow) onStartStopClick() {
 		w.monitor.Start()
 	} else {
 		w.isMonitoring = false
+		w.mu.Unlock()
+
 		w.startStopBtn.SetText("Start Monitoring")
 		w.startStopBtn.Importance = widget.HighImportance
 		w.appendLog("Monitoring stopped.")
@@ -183,9 +225,10 @@ func (w *MainWindow) onStartStopClick() {
 
 // onClearLogClick handles the clear log button click
 func (w *MainWindow) onClearLogClick() {
+	w.mu.Lock()
 	w.logLines = w.logLines[:0]
-	w.logText.Segments = nil
-	w.logText.Refresh()
+	w.logBinding.Set("")
+	w.mu.Unlock()
 }
 
 // appendLog adds a timestamped message to the log
@@ -193,25 +236,30 @@ func (w *MainWindow) appendLog(message string) {
 	timestamp := time.Now().Format("15:04:05")
 	logLine := fmt.Sprintf("[%s] %s", timestamp, message)
 
+	w.mu.Lock()
 	// Add new line to slice
 	w.logLines = append(w.logLines, logLine)
 
 	// Trim log if it exceeds max lines
 	if len(w.logLines) > maxLogLines {
-		w.trimLog()
+		w.trimLogLocked()
 	}
 
-	// Update RichText with single TextSegment containing all lines
-	w.logText.Segments = []widget.RichTextSegment{
-		&widget.TextSegment{
-			Text: strings.Join(w.logLines, "\n"),
-		},
-	}
-	w.logText.Refresh()
+	// Update Binding
+	fullLog := strings.Join(w.logLines, "\n")
+	w.logBinding.Set(fullLog)
+	w.mu.Unlock()
 }
 
 // trimLog removes older log entries to keep the log size manageable
 func (w *MainWindow) trimLog() {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	w.trimLogLocked()
+}
+
+// trimLogLocked removes older log entries (caller must hold w.mu)
+func (w *MainWindow) trimLogLocked() {
 	keepLines := maxLogLines / 2
 	if len(w.logLines) > keepLines {
 		w.logLines = w.logLines[len(w.logLines)-keepLines:]
@@ -220,28 +268,30 @@ func (w *MainWindow) trimLog() {
 
 // UpdateD2RStatus updates the D2R monitoring display
 func (w *MainWindow) UpdateD2RStatus(processCount int, processList string, handlesClosed int) {
-	w.d2rCountLabel.SetText(fmt.Sprintf("Detected processes: %d", processCount))
+	w.d2rCountBinding.Set(fmt.Sprintf("Detected processes: %d", processCount))
 	if processList == "" {
-		w.d2rProcessList.SetText("No D2R.exe processes detected")
+		w.d2rProcessBinding.Set("No D2R.exe processes detected")
 	} else {
-		w.d2rProcessList.SetText(processList)
+		w.d2rProcessBinding.Set(processList)
 	}
-	w.d2rHandlesClosedLabel.SetText(fmt.Sprintf("Total handles closed: %d", handlesClosed))
+	w.d2rHandlesBinding.Set(fmt.Sprintf("Total handles closed: %d", handlesClosed))
 }
 
 // UpdateAgentStatus updates the Agent monitoring display
 func (w *MainWindow) UpdateAgentStatus(processCount int, processList string, agentsKilled int) {
-	w.agentCountLabel.SetText(fmt.Sprintf("Detected processes: %d", processCount))
+	w.agentCountBinding.Set(fmt.Sprintf("Detected processes: %d", processCount))
 	if processList == "" {
-		w.agentProcessList.SetText("No Agent.exe processes detected")
+		w.agentProcessBinding.Set("No Agent.exe processes detected")
 	} else {
-		w.agentProcessList.SetText(processList)
+		w.agentProcessBinding.Set(processList)
 	}
-	w.agentKilledLabel.SetText(fmt.Sprintf("Total processes terminated: %d", agentsKilled))
+	w.agentKilledBinding.Set(fmt.Sprintf("Total processes terminated: %d", agentsKilled))
 }
 
 // IsMonitoring returns the current monitoring state
 func (w *MainWindow) IsMonitoring() bool {
+	w.mu.Lock()
+	defer w.mu.Unlock()
 	return w.isMonitoring
 }
 

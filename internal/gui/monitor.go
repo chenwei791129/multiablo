@@ -39,6 +39,7 @@ type Monitor struct {
 
 	// Running state
 	running bool
+	wg      sync.WaitGroup
 }
 
 // NewMonitor creates a new monitor instance
@@ -60,21 +61,34 @@ func (m *Monitor) Start() {
 	m.stopChan = make(chan struct{})
 	m.mu.Unlock()
 
-	go m.handleCloserLoop()
-	go m.agentKillerLoop()
-	go m.statusUpdateLoop()
+	m.wg.Add(3)
+	go func() {
+		defer m.wg.Done()
+		m.handleCloserLoop()
+	}()
+	go func() {
+		defer m.wg.Done()
+		m.agentKillerLoop()
+	}()
+	go func() {
+		defer m.wg.Done()
+		m.statusUpdateLoop()
+	}()
 }
 
 // Stop stops the monitoring loops
 func (m *Monitor) Stop() {
 	m.mu.Lock()
-	defer m.mu.Unlock()
-
 	if !m.running {
+		m.mu.Unlock()
 		return
 	}
 	m.running = false
 	close(m.stopChan)
+	m.mu.Unlock()
+
+	// Wait for all goroutines to finish
+	m.wg.Wait()
 }
 
 // IsRunning returns whether the monitor is running
