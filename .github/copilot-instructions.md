@@ -128,8 +128,8 @@ go test ./...
 
 ### Running
 ```bash
-# Must run as Administrator (Windows API requirements)
 # Simply run the executable - GUI will appear and auto-start monitoring
+# No administrator privileges required
 multiablo.exe
 ```
 
@@ -219,11 +219,10 @@ case <-ticker.C:
 1. **Buffer size mismanagement**: Always check for `StatusInfoLengthMismatch` and retry with larger buffer
 2. **Pointer arithmetic errors**: Ensure `handleEntrySize` is correct before calculating offsets
 3. **Handle type filtering**: Event handle type index is 19 on most systems but OS-dependent; test before hardcoding
-4. **Admin rights**: All handle operations require Administrator privileges; program must run elevated
-5. **Process architecture mismatch**: 64-bit program can only safely manipulate 64-bit process handles (and vice versa)
-6. **Goroutine leaks**: Always defer ticker.Stop() and ensure stop channel is closed
-7. **CGO/Fyne build issues**: Ensure MinGW-w64 is installed and CGO_ENABLED=1 is set
-8. **UI thread safety**: Always use channels for goroutine-to-UI communication; never update UI directly from background goroutines
+4. **Process architecture mismatch**: 64-bit program can only safely manipulate 64-bit process handles (and vice versa)
+5. **Goroutine leaks**: Always defer ticker.Stop() and ensure stop channel is closed
+6. **CGO/Fyne build issues**: Ensure MinGW-w64 is installed and CGO_ENABLED=1 is set
+7. **UI thread safety**: Always use channels for goroutine-to-UI communication; never update UI directly from background goroutines
 
 ---
 
@@ -270,9 +269,8 @@ When adding new features, maintain the layered architecture: processes → handl
 
 ### Platform Limitations
 1. **Windows Only**: D2R itself is Windows-only, so this is an inherent constraint
-2. **Administrator Rights Required**: Handle manipulation requires elevated privileges
-3. **Architecture Matching**: 64-bit program can only manipulate 64-bit process handles safely
-4. **MinGW-w64 Required**: Fyne GUI requires CGO which needs MinGW-w64 toolchain
+2. **Architecture Matching**: 64-bit program can only safely manipulate 64-bit process handles (and vice versa)
+3. **MinGW-w64 Required**: Fyne GUI requires CGO which needs MinGW-w64 toolchain for building
 
 ### API and Compatibility Risks
 1. **Handle Name Dependency**: If Blizzard changes the `DiabloII Check For Other Instances` handle name, program will fail
@@ -288,19 +286,23 @@ When adding new features, maintain the layered architecture: processes → handl
 
 ---
 
-## UAC and Build System Details
+## Windows Manifest and Build System Details
 
-### UAC Auto-Elevation
-The program uses a Windows Manifest to automatically request administrator privileges:
+### Windows Manifest Configuration
+The program uses a Windows Manifest for application metadata and compatibility settings:
 
 **Configuration** (`cmd/multiablo/winres/winres.json`):
 ```json
 {
   "RT_MANIFEST": {
-    "execution-level": "requireAdministrator"
+    "execution-level": "asInvoker",
+    "dpi-awareness": "system",
+    "use-common-controls-v6": true
   }
 }
 ```
+
+**Note**: The application runs without requiring administrator privileges (`asInvoker`). Handle manipulation works at the user level for processes owned by the same user.
 
 ### Complete Build Process
 
@@ -331,7 +333,6 @@ CGO_ENABLED=1 go build -ldflags="-s -w -H windowsgui" -o multiablo.exe ./cmd/mul
 - After modifying `winres.json`, re-run `go-winres` to regenerate
 - `.syso` files are in `.gitignore` (generated locally)
 - Go build automatically links `.syso` files during compilation
-- Result: Windows shows UAC prompt when user launches the program
 - `-H windowsgui` flag hides the console window for a clean GUI experience
 
 ---
@@ -355,10 +356,10 @@ CGO_ENABLED=1 go build -ldflags="-s -w -H windowsgui" -o multiablo.exe ./cmd/mul
 - Implemented dual logging modes (normal/verbose)
 - Disabled stack traces for cleaner output
 
-### 2025-12-20: UAC Integration
-- Added Windows Manifest for auto-elevation
+### 2025-12-20: Windows Manifest Integration
+- Added Windows Manifest for application metadata
 - Integrated `go-winres` build tooling
-- Automated administrator privilege request
+- Configured version info and compatibility settings
 
 ### 2025-12-28: Intelligent Agent.exe Termination
 - Added process uptime tracking functions
@@ -384,7 +385,6 @@ CGO_ENABLED=1 go build -ldflags="-s -w -H windowsgui" -o multiablo.exe ./cmd/mul
 - MinGW-w64 (for CGO/Fyne compilation)
 - Git for version control
 - `go-winres` tool for resource generation
-- Administrator privileges (required for testing)
 
 ### Testing Requirements
 - D2R installed and configured
@@ -421,7 +421,7 @@ CGO_ENABLED=1 go build -ldflags="-s -w -H windowsgui" -o multiablo.exe ./cmd/mul
 
 ### Testing Workflow
 1. Build the application: `CGO_ENABLED=1 go build -ldflags="-s -w -H windowsgui" -o multiablo.exe ./cmd/multiablo`
-2. Run `multiablo.exe` (UAC prompt will appear)
+2. Run `multiablo.exe`
 3. Verify GUI appears and monitoring auto-starts
 4. Launch D2R from Battle.net launcher (first instance)
 5. Check activity log for handle closing messages
@@ -443,13 +443,13 @@ CGO_ENABLED=1 go build -ldflags="-s -w -H windowsgui" -o multiablo.exe ./cmd/mul
 - ✅ System-wide handle enumeration
 - ✅ Single-instance handle closing
 - ✅ Multiple D2R instance support
-- ✅ UAC auto-elevation
 - ✅ Intelligent Agent.exe termination with uptime checking
 - ✅ Agent.exe relaunch after termination
 - ✅ GUI interface with Fyne
 - ✅ Real-time process monitoring display
 - ✅ Activity log with auto-trim
 - ✅ Start/Stop monitoring control
+- ✅ Windows Manifest with version info
 - ✅ Comprehensive documentation
 
 ### Future Enhancements (Consideration)
