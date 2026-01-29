@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.1.0](https://github.com/chenwei791129/multiablo/compare/v2.0.0...v2.1.0) (2026-01-29)
+
+
+### Features
+
+* add multi-language support (i18n) using gotext ([#18](https://github.com/chenwei791129/multiablo/issues/18)) ([602934c](https://github.com/chenwei791129/multiablo/commit/602934cfb34c318172a17e7f0b8532009f655300))
+
+
+### Bug Fixes
+
+* simplify translate workflow to single job ([4d30b11](https://github.com/chenwei791129/multiablo/commit/4d30b118321a80ab3cb765b9049941c2613ffce0))
+
 ## [2.0.0](https://github.com/chenwei791129/multiablo/compare/v1.3.1...v2.0.0) (2026-01-18)
 
 
