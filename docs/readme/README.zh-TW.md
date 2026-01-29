@@ -1,6 +1,6 @@
 # D2R MultiAblo -《暗黑破壞神 II：獄火重生》多開輔助工具
 
-[English](README.md) | [繁體中文](README.zh-TW.md)
+[English](../../README.md) | [繁體中文](README.zh-TW.md) | [简体中文](README.zh-CN.md) | [日本語](README.ja.md)
 
 適用於 Windows 的《暗黑破壞神 II：獄火重生》(D2R) 多開輔助工具，使用 Go 語言開發。
 
