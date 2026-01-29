@@ -4,14 +4,19 @@ package gui
 import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
+
+	"github.com/chenwei791129/multiablo/internal/i18n"
 )
 
 const (
 	// AppID is the unique identifier for the application
 	AppID = "com.github.chenwei791129.multiablo"
-	// AppTitle is the window title
-	AppTitle = "Multiablo - D2R Multi-Instance Helper"
 )
+
+// AppTitle returns the localized application title.
+func AppTitle() string {
+	return i18n.Get("Multiablo - D2R Multi-Instance Helper")
+}
 
 // App wraps the Fyne application
 type App struct {
@@ -21,6 +26,9 @@ type App struct {
 
 // NewApp creates a new GUI application
 func NewApp() *App {
+	// Initialize i18n with system language detection
+	i18n.Init("")
+
 	a := app.NewWithID(AppID)
 	return &App{
 		fyneApp: a,

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/chenwei791129/multiablo/internal/handle"
+	"github.com/chenwei791129/multiablo/internal/i18n"
 	"github.com/chenwei791129/multiablo/internal/process"
 	"github.com/chenwei791129/multiablo/pkg/d2r"
 )
@@ -136,7 +137,7 @@ func (m *Monitor) checkD2RProcesses() {
 			m.mu.Unlock()
 
 			m.sendStatus(MonitorStatus{
-				Event: fmt.Sprintf("Closed %d handle(s) for D2R.exe (PID: %d)", closedCount, proc.PID),
+				Event: fmt.Sprintf(i18n.Get("Closed %d handle(s) for D2R.exe (PID: %d)"), closedCount, proc.PID),
 			})
 		}
 
@@ -208,18 +209,18 @@ func (m *Monitor) checkAgentProcesses() {
 				m.mu.Unlock()
 
 				m.sendStatus(MonitorStatus{
-					Event: fmt.Sprintf("Terminated %d Agent.exe process(es)", killedCount),
+					Event: fmt.Sprintf(i18n.Get("Terminated %d Agent.exe process(es)"), killedCount),
 				})
 
 				// Relaunch Agent.exe
 				err = process.LaunchProcess(agentPath)
 				if err != nil {
 					m.sendStatus(MonitorStatus{
-						Event: fmt.Sprintf("Failed to relaunch Agent.exe: %v", err),
+						Event: fmt.Sprintf(i18n.Get("Failed to relaunch Agent.exe: %v"), err),
 					})
 				} else {
 					m.sendStatus(MonitorStatus{
-						Event: "Relaunched Agent.exe successfully",
+						Event: i18n.Get("Relaunched Agent.exe successfully"),
 					})
 				}
 			}
@@ -303,14 +304,14 @@ func (m *Monitor) statusUpdateLoop() {
 func (m *Monitor) updateD2RUI(processes []ProcessInfo, handlesClosed int) {
 	processList := ""
 	for _, p := range processes {
-		status := "monitoring"
+		status := i18n.Get("monitoring")
 		if p.HandleClosed {
-			status = "handle closed"
+			status = i18n.Get("handle closed")
 		}
 		if processList != "" {
 			processList += "\n"
 		}
-		processList += fmt.Sprintf("PID %d - %s", p.PID, status)
+		processList += fmt.Sprintf(i18n.Get("PID %d - %s"), p.PID, status)
 	}
 
 	m.window.UpdateD2RStatus(len(processes), processList, handlesClosed)
@@ -323,7 +324,7 @@ func (m *Monitor) updateAgentUI(processes []ProcessInfo, agentsKilled int) {
 		if processList != "" {
 			processList += "\n"
 		}
-		processList += fmt.Sprintf("PID %d - uptime: %.1fs", p.PID, p.Uptime.Seconds())
+		processList += fmt.Sprintf(i18n.Get("PID %d - uptime: %.1fs"), p.PID, p.Uptime.Seconds())
 	}
 
 	m.window.UpdateAgentStatus(len(processes), processList, agentsKilled)

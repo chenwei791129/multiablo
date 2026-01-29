@@ -1,0 +1,94 @@
+# English (US) translations for Multiablo.
+# Copyright (C) 2026 chenwei791129
+# This file is distributed under the MIT license.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: multiablo 2.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-29 12:00+0800\n"
+"PO-Revision-Date: 2026-01-29 12:00+0800\n"
+"Last-Translator: \n"
+"Language-Team: English\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# App title
+msgid "Multiablo - D2R Multi-Instance Helper"
+msgstr "Multiablo - D2R Multi-Instance Helper"
+
+# Card titles
+msgid "D2R.exe Monitor"
+msgstr "D2R.exe Monitor"
+
+msgid "Agent.exe Monitor"
+msgstr "Agent.exe Monitor"
+
+msgid "Activity Log"
+msgstr "Activity Log"
+
+# Button labels
+msgid "Start Monitoring"
+msgstr "Start Monitoring"
+
+msgid "Stop Monitoring"
+msgstr "Stop Monitoring"
+
+msgid "Clear Log"
+msgstr "Clear Log"
+
+# Status messages
+msgid "Detected processes: %d"
+msgstr "Detected processes: %d"
+
+msgid "No D2R.exe processes detected"
+msgstr "No D2R.exe processes detected"
+
+msgid "Total handles closed: %d"
+msgstr "Total handles closed: %d"
+
+msgid "No Agent.exe processes detected"
+msgstr "No Agent.exe processes detected"
+
+msgid "Total processes terminated: %d"
+msgstr "Total processes terminated: %d"
+
+# Log messages
+msgid "Multiablo GUI started"
+msgstr "Multiablo GUI started"
+
+msgid "Monitoring will start automatically..."
+msgstr "Monitoring will start automatically..."
+
+msgid "Monitoring started..."
+msgstr "Monitoring started..."
+
+msgid "Monitoring stopped."
+msgstr "Monitoring stopped."
+
+msgid "Closed %d handle(s) for D2R.exe (PID: %d)"
+msgstr "Closed %d handle(s) for D2R.exe (PID: %d)"
+
+msgid "Terminated %d Agent.exe process(es)"
+msgstr "Terminated %d Agent.exe process(es)"
+
+msgid "Failed to relaunch Agent.exe: %v"
+msgstr "Failed to relaunch Agent.exe: %v"
+
+msgid "Relaunched Agent.exe successfully"
+msgstr "Relaunched Agent.exe successfully"
+
+# Process status
+msgid "monitoring"
+msgstr "monitoring"
+
+msgid "handle closed"
+msgstr "handle closed"
+
+msgid "PID %d - %s"
+msgstr "PID %d - %s"
+
+msgid "PID %d - uptime: %.1fs"
+msgstr "PID %d - uptime: %.1fs"
