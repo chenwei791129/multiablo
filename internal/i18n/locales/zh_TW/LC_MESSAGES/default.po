@@ -70,7 +70,7 @@ msgid "Monitoring stopped."
 msgstr "監控已停止。"
 
 msgid "Closed %d handle(s) for D2R.exe (PID: %d)"
-msgstr "已為 D2R.exe (PID: %d) 關閉 %d 個 Handle"
+msgstr "已關閉 %d 個 D2R.exe Handle (PID: %d)"
 
 msgid "Terminated %d Agent.exe process(es)"
 msgstr "已終止 %d 個 Agent.exe 程序"

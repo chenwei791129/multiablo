@@ -1,4 +1,9 @@
 // Package i18n provides internationalization support for the application.
+//
+// Thread Safety: Init() and SetLanguage() must be called during application
+// initialization before any goroutines that use Get() are started. Once
+// initialized, the Get() function is safe to call from multiple goroutines
+// as it only performs read operations on the locale data.
 package i18n
 
 import (
@@ -32,6 +37,9 @@ var (
 
 // Init initializes the i18n system with the specified language.
 // If lang is empty, it will try to detect the system language.
+//
+// This function must be called once during application startup, before
+// any goroutines that call Get() are started. It is not thread-safe.
 func Init(lang string) {
 	if lang == "" {
 		lang = detectSystemLanguage()
