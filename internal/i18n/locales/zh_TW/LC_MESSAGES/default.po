@@ -1,0 +1,95 @@
+# Traditional Chinese translations for Multiablo.
+# Copyright (C) 2026 chenwei791129
+# This file is distributed under the MIT license.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: multiablo 2.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-29 12:00+0800\n"
+"PO-Revision-Date: 2026-01-29 12:00+0800\n"
+"Last-Translator: \n"
+"Language-Team: Chinese (Traditional)\n"
+"Language: zh_TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+# App title
+msgid "Multiablo - D2R Multi-Instance Helper"
+msgstr "Multiablo - D2R 多開輔助工具"
+
+# Card titles
+msgid "D2R.exe Monitor"
+msgstr "D2R.exe 監控"
+
+msgid "Agent.exe Monitor"
+msgstr "Agent.exe 監控"
+
+msgid "Activity Log"
+msgstr "活動日誌"
+
+# Button labels
+msgid "Start Monitoring"
+msgstr "開始監控"
+
+msgid "Stop Monitoring"
+msgstr "停止監控"
+
+msgid "Clear Log"
+msgstr "清除日誌"
+
+# Status messages
+msgid "Detected processes: %d"
+msgstr "偵測到的程序: %d"
+
+msgid "No D2R.exe processes detected"
+msgstr "未偵測到 D2R.exe 程序"
+
+msgid "Total handles closed: %d"
+msgstr "已關閉的 Handle 總數: %d"
+
+msgid "No Agent.exe processes detected"
+msgstr "未偵測到 Agent.exe 程序"
+
+msgid "Total processes terminated: %d"
+msgstr "已終止的程序總數: %d"
+
+# Log messages
+msgid "Multiablo GUI started"
+msgstr "Multiablo 介面已啟動"
+
+msgid "Monitoring will start automatically..."
+msgstr "監控即將自動開始..."
+
+msgid "Monitoring started..."
+msgstr "監控已開始..."
+
+msgid "Monitoring stopped."
+msgstr "監控已停止。"
+
+msgid "Closed %d handle(s) for D2R.exe (PID: %d)"
+msgstr "已關閉 %d 個 D2R.exe Handle (PID: %d)"
+
+msgid "Terminated %d Agent.exe process(es)"
+msgstr "已終止 %d 個 Agent.exe 程序"
+
+msgid "Failed to relaunch Agent.exe: %v"
+msgstr "重新啟動 Agent.exe 失敗: %v"
+
+msgid "Relaunched Agent.exe successfully"
+msgstr "已成功重新啟動 Agent.exe"
+
+# Process status
+msgid "monitoring"
+msgstr "監控中"
+
+msgid "handle closed"
+msgstr "Handle 已關閉"
+
+msgid "PID %d - %s"
+msgstr "PID %d - %s"
+
+msgid "PID %d - uptime: %.1fs"
+msgstr "PID %d - 運行時間: %.1f秒"

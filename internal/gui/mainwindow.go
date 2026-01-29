@@ -11,6 +11,8 @@ import (
 	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
+
+	"github.com/chenwei791129/multiablo/internal/i18n"
 )
 
 const (
@@ -66,7 +68,7 @@ func NewMainWindow(app fyne.App) *MainWindow {
 		isMonitoring: false,
 		logLines:     make([]string, 0, maxLogLines),
 	}
-	w.window = app.NewWindow(AppTitle)
+	w.window = app.NewWindow(AppTitle())
 	w.window.Resize(fyne.NewSize(windowWidth, windowHeight))
 	w.window.CenterOnScreen()
 
@@ -98,17 +100,17 @@ func NewMainWindow(app fyne.App) *MainWindow {
 // createUI builds the user interface
 func (w *MainWindow) createUI() {
 	// D2R.exe monitoring section
-	w.d2rCountBinding.Set("Detected processes: 0")
+	w.d2rCountBinding.Set(fmt.Sprintf(i18n.Get("Detected processes: %d"), 0))
 	w.d2rCountLabel = widget.NewLabelWithData(w.d2rCountBinding)
 
-	w.d2rProcessBinding.Set("No D2R.exe processes detected")
+	w.d2rProcessBinding.Set(i18n.Get("No D2R.exe processes detected"))
 	w.d2rProcessList = widget.NewLabelWithData(w.d2rProcessBinding)
 	w.d2rProcessList.Wrapping = fyne.TextWrapWord
 
-	w.d2rHandlesBinding.Set("Total handles closed: 0")
+	w.d2rHandlesBinding.Set(fmt.Sprintf(i18n.Get("Total handles closed: %d"), 0))
 	w.d2rHandlesClosedLabel = widget.NewLabelWithData(w.d2rHandlesBinding)
 
-	d2rCard := widget.NewCard("D2R.exe Monitor", "",
+	d2rCard := widget.NewCard(i18n.Get("D2R.exe Monitor"), "",
 		container.NewVBox(
 			w.d2rCountLabel,
 			w.d2rProcessList,
@@ -117,17 +119,17 @@ func (w *MainWindow) createUI() {
 	)
 
 	// Agent.exe monitoring section
-	w.agentCountBinding.Set("Detected processes: 0")
+	w.agentCountBinding.Set(fmt.Sprintf(i18n.Get("Detected processes: %d"), 0))
 	w.agentCountLabel = widget.NewLabelWithData(w.agentCountBinding)
 
-	w.agentProcessBinding.Set("No Agent.exe processes detected")
+	w.agentProcessBinding.Set(i18n.Get("No Agent.exe processes detected"))
 	w.agentProcessList = widget.NewLabelWithData(w.agentProcessBinding)
 	w.agentProcessList.Wrapping = fyne.TextWrapWord
 
-	w.agentKilledBinding.Set("Total processes terminated: 0")
+	w.agentKilledBinding.Set(fmt.Sprintf(i18n.Get("Total processes terminated: %d"), 0))
 	w.agentKilledLabel = widget.NewLabelWithData(w.agentKilledBinding)
 
-	agentCard := widget.NewCard("Agent.exe Monitor", "",
+	agentCard := widget.NewCard(i18n.Get("Agent.exe Monitor"), "",
 		container.NewVBox(
 			w.agentCountLabel,
 			w.agentProcessList,
@@ -144,15 +146,15 @@ func (w *MainWindow) createUI() {
 	logScroll := container.NewScroll(w.logLabel)
 	logScroll.SetMinSize(fyne.NewSize(600, 200))
 
-	logCard := widget.NewCard("Activity Log", "", logScroll)
+	logCard := widget.NewCard(i18n.Get("Activity Log"), "", logScroll)
 
 	// Control buttons
-	w.startStopBtn = widget.NewButton("Start Monitoring", func() {
+	w.startStopBtn = widget.NewButton(i18n.Get("Start Monitoring"), func() {
 		w.onStartStopClick()
 	})
 	w.startStopBtn.Importance = widget.HighImportance
 
-	w.clearLogBtn = widget.NewButton("Clear Log", func() {
+	w.clearLogBtn = widget.NewButton(i18n.Get("Clear Log"), func() {
 		w.onClearLogClick()
 	})
 
@@ -176,8 +178,8 @@ func (w *MainWindow) createUI() {
 	w.window.SetContent(padded)
 
 	// Initial log message
-	w.appendLog("Multiablo GUI started")
-	w.appendLog("Monitoring will start automatically...")
+	w.appendLog(i18n.Get("Multiablo GUI started"))
+	w.appendLog(i18n.Get("Monitoring will start automatically..."))
 }
 
 // Show displays the window
@@ -199,9 +201,9 @@ func (w *MainWindow) onStartStopClick() {
 		w.isMonitoring = true
 		w.mu.Unlock()
 
-		w.startStopBtn.SetText("Stop Monitoring")
+		w.startStopBtn.SetText(i18n.Get("Stop Monitoring"))
 		w.startStopBtn.Importance = widget.DangerImportance
-		w.appendLog("Monitoring started...")
+		w.appendLog(i18n.Get("Monitoring started..."))
 
 		// Create and start monitor
 		if w.monitor == nil {
@@ -212,9 +214,9 @@ func (w *MainWindow) onStartStopClick() {
 		w.isMonitoring = false
 		w.mu.Unlock()
 
-		w.startStopBtn.SetText("Start Monitoring")
+		w.startStopBtn.SetText(i18n.Get("Start Monitoring"))
 		w.startStopBtn.Importance = widget.HighImportance
-		w.appendLog("Monitoring stopped.")
+		w.appendLog(i18n.Get("Monitoring stopped."))
 
 		// Stop monitor
 		if w.monitor != nil {
@@ -268,24 +270,24 @@ func (w *MainWindow) trimLogLocked() {
 
 // UpdateD2RStatus updates the D2R monitoring display
 func (w *MainWindow) UpdateD2RStatus(processCount int, processList string, handlesClosed int) {
-	w.d2rCountBinding.Set(fmt.Sprintf("Detected processes: %d", processCount))
+	w.d2rCountBinding.Set(fmt.Sprintf(i18n.Get("Detected processes: %d"), processCount))
 	if processList == "" {
-		w.d2rProcessBinding.Set("No D2R.exe processes detected")
+		w.d2rProcessBinding.Set(i18n.Get("No D2R.exe processes detected"))
 	} else {
 		w.d2rProcessBinding.Set(processList)
 	}
-	w.d2rHandlesBinding.Set(fmt.Sprintf("Total handles closed: %d", handlesClosed))
+	w.d2rHandlesBinding.Set(fmt.Sprintf(i18n.Get("Total handles closed: %d"), handlesClosed))
 }
 
 // UpdateAgentStatus updates the Agent monitoring display
 func (w *MainWindow) UpdateAgentStatus(processCount int, processList string, agentsKilled int) {
-	w.agentCountBinding.Set(fmt.Sprintf("Detected processes: %d", processCount))
+	w.agentCountBinding.Set(fmt.Sprintf(i18n.Get("Detected processes: %d"), processCount))
 	if processList == "" {
-		w.agentProcessBinding.Set("No Agent.exe processes detected")
+		w.agentProcessBinding.Set(i18n.Get("No Agent.exe processes detected"))
 	} else {
 		w.agentProcessBinding.Set(processList)
 	}
-	w.agentKilledBinding.Set(fmt.Sprintf("Total processes terminated: %d", agentsKilled))
+	w.agentKilledBinding.Set(fmt.Sprintf(i18n.Get("Total processes terminated: %d"), agentsKilled))
 }
 
 // IsMonitoring returns the current monitoring state
