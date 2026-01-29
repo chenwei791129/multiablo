@@ -1,59 +1,57 @@
-# D2R MultiAblo - Diablo 2 Resurrected マルチインスタンスツール
+# D2R Multiablo - Diablo 2 Resurrected マルチインスタンスツール
 
-[English](../../README.md) | [繁體中文](README.zh-TW.md) | [简体中文](README.zh-CN.md) | [日本語](README.ja.md)
+[English](README.md) | [繁體中文](docs/readme/README.zh-TW.md) | [简体中文](docs/readme/README.zh-CN.md) | [日本語](docs/readme/README.ja.md)
 
-Windows用の『ディアブロ II リザレクテッド』(D2R) マルチインスタンスヘルパーツール。Go言語で開発されています。
-
-_注意：このファイルは、メインブランチの README.md が更新されると ai-translate-action によって自動翻訳されます。_
+Windows向けにGoで作成された、D2R（Diablo II: Resurrected）のマルチインスタンスヘルパーツールです。
 
 ## ダウンロード
 
-Multiablo の最新バージョンは [Releases](https://github.com/chenwei791129/multiablo/releases) ページからダウンロードできます。または、以下の直接リンクを使用してください：
+Multiabloの最新版は[Releases](https://github.com/chenwei791129/multiablo/releases)ページから、または以下の直接リンクからダウンロードできます。
 
-[🚀 最新版 multiablo.exe をダウンロード](https://github.com/chenwei791129/multiablo/releases/latest/download/multiablo.exe)
+[🚀 最新版 multiablo.exe をダウンロードする](https://github.com/chenwei791129/multiablo/releases/latest/download/multiablo.exe)
 
 ## 概要
 
-Multiablo を使用すると、D2R が複数起動を防ぐために使用する単一インスタンスイベントハンドルを継続的に監視して閉じることで、『ディアブロ II リザレクテッド』の複数のインスタンスを同時に実行できます。このツールをバックグラウンドで実行するだけで、Battle.net ランチャーから追加の手順なしで複数の D2R インスタンスを起動できます。
+Multiabloは、D2Rがマルチ起動を防ぐために使用する単一インスタンスのイベントハンドルを継続的に監視して閉じることで、複数のDiablo II: Resurrectedインスタンスを同時に実行できるようにします。このツールをバックグラウンドで実行するだけで、Battle.netランチャーから追加の操作なく、複数のD2Rインスタンスを起動できます。
 
-## 仕組み
+## 動作の仕組み
 
-D2R は `DiabloII Check For Other Instances` という名前の Windows イベントハンドルを作成することで、複数起動を防いでいます。D2R が起動すると、このハンドルが存在するかどうかをチェックし、存在する場合はゲームの起動を拒否します。
+D2Rは、`DiabloII Check For Other Instances`という名前のWindowsイベントハンドルを作成することで、複数インスタンスの起動を防ぎます。D2Rが起動すると、このハンドルが存在するか確認し、存在するとゲームの起動を拒否します。
 
-Multiablo の動作方法：
-1. 実行中の D2R.exe プロセスを継続的に監視
-2. `DiabloII Check For Other Instances` イベントハンドルを自動検出して閉じる
-3. Battle.net ランチャーからいつでも複数の D2R インスタンスを起動可能にする
-4. `Agent.exe` プロセスを監視し、7秒以上実行された後にのみ終了させることで、Battle.net ランチャーの「ゲームを開始」実行の可用性を最大化
+Multiabloは以下のように動作します：
+1. 実行中のD2R.exeプロセスを継続的に監視します
+2. 自動的に`DiabloII Check For Other Instances`イベントハンドルを検出して閉じます
+3. Battle.netランチャーからいつでも複数のD2Rインスタンスを起動可能にします
+4. `Agent.exe`プロセスを監視し、起動後7秒経過してから終了させることで、Battle.netランチャーでのゲーム起動可能性を最大化します
 
 ## 使用方法
 
 ### 基本的な使い方
 
-1. **multiablo.exe を実行**
-2. **Battle.net ランチャーから D2R を起動**
-3. **他の Battle.net ランチャーから追加の D2R インスタンスを起動**！
+1. **multiablo.exeを実行する**
+2. Battle.netランチャーから **D2Rを起動する**
+3. 他のBattle.netランチャーから **追加のD2Rインスタンスを起動する**
 
-アプリケーションは起動時に自動的に監視を開始します。GUI インターフェースで検出されたプロセスの状態とハンドル操作の結果を確認できます。
+ツールを起動すると、自動的に監視が開始されます。GUIで検出されたプロセスやハンドル操作の状況を確認できます。
 
-### ウイルス対策ソフトの誤検出
+### ウイルス対策ソフトによる誤検出
 
-一部のウイルス対策ソフトウェアは、プロセスハンドルを操作するため、Multiablo を脅威としてフラグを立てる場合があります。これはこの種のツールの予期される動作です。例外を追加する必要がある場合があります。
+一部のウイルス対策ソフトウェアでは、Multiabloがプロセスハンドルを操作するため、警告が出る場合があります。このツールの特性上、これは想定される動作です。必要に応じて例外設定を行ってください。
 
 ## 免責事項
 
-このツールは教育および個人使用のみを目的としています。使用はご自身の責任で行ってください。作者は以下について責任を負いません：
-- 『ディアブロ II リザレクテッド』利用規約の違反
-- アカウントの停止または禁止
-- ゲームのクラッシュまたはデータの損失
-- このソフトウェアの使用から生じるその他の問題
+このツールは教育目的および個人利用のみを目的としています。使用は自己責任で行ってください。作者は以下について責任を負いません：
+- Diablo II: Resurrected利用規約の違反
+- アカウントの停止やBAN
+- ゲームのクラッシュやデータ損失
+- このソフトウェアの使用に起因するその他の問題
 
-**注意**：複数のインスタンスを実行することは、ゲームの利用規約に違反する可能性があります。使用前に Blizzard のポリシーを確認してください。
+**注意**：複数インスタンスの実行はゲームの利用規約に反する場合があります。使用前にBlizzardのポリシーを確認してください。
 
 ## ライセンス
 
-MIT ライセンス - 詳細は LICENSE ファイルを参照してください
+MITライセンス - 詳細はLICENSEファイルをご参照ください
 
 ## 謝辞
 
-- Process Explorer のハンドル管理機能にインスパイアされています
+- Process Explorerのハンドル管理機能に触発されました
