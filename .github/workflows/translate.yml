@@ -7,6 +7,7 @@ on:
       - main
     paths:
       - "README.md"
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -14,68 +15,55 @@ permissions:
   models: read
 
 jobs:
-  translate:
+  translate-and-pr:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        language:
-          - name: "Traditional Chinese"
-            code: "zh-TW"
-            file: "README.zh-TW.md"
-          - name: "Simplified Chinese"
-            code: "zh-CN"
-            file: "README.zh-CN.md"
-          - name: "Japanese"
-            code: "ja"
-            file: "README.ja.md"
     steps:
       - uses: actions/checkout@v4
 
-      - name: Translate README to ${{ matrix.language.name }}
+      - name: Translate to Traditional Chinese
         uses: FidelusAleksander/ai-translate-action@v1
-        id: translate
+        id: translate-zh-tw
         with:
           text-file: "README.md"
-          target-language: ${{ matrix.language.code }}
+          target-language: "zh-TW"
           custom-instructions: >-
             Keep technical terms and code snippets in English.
             Don't translate URLs, file paths, or code blocks.
             Preserve markdown formatting.
 
-      - name: Save translation
+      - name: Translate to Simplified Chinese
+        uses: FidelusAleksander/ai-translate-action@v1
+        id: translate-zh-cn
+        with:
+          text-file: "README.md"
+          target-language: "zh-CN"
+          custom-instructions: >-
+            Keep technical terms and code snippets in English.
+            Don't translate URLs, file paths, or code blocks.
+            Preserve markdown formatting.
+
+      - name: Translate to Japanese
+        uses: FidelusAleksander/ai-translate-action@v1
+        id: translate-ja
+        with:
+          text-file: "README.md"
+          target-language: "ja"
+          custom-instructions: >-
+            Keep technical terms and code snippets in English.
+            Don't translate URLs, file paths, or code blocks.
+            Preserve markdown formatting.
+
+      - name: Save translations
         run: |
           mkdir -p docs/readme
-          echo "$TRANSLATED_TEXT" > docs/readme/${{ matrix.language.file }}
+          echo "$ZH_TW" > docs/readme/README.zh-TW.md
+          echo "$ZH_CN" > docs/readme/README.zh-CN.md
+          echo "$JA" > docs/readme/README.ja.md
+          ls -la docs/readme/
         env:
-          TRANSLATED_TEXT: ${{ steps.translate.outputs.translated-text }}
-
-      - name: Upload translation artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.language.file }}
-          path: docs/readme/${{ matrix.language.file }}
-
-  create-pr:
-    needs: translate
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Download all translation artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: docs/readme
-
-      - name: Move files from artifact subdirectories
-        run: |
-          cd docs/readme
-          for dir in */; do
-            if [ -d "$dir" ]; then
-              mv "$dir"* . 2>/dev/null || true
-              rmdir "$dir" 2>/dev/null || true
-            fi
-          done
-          ls -la
+          ZH_TW: ${{ steps.translate-zh-tw.outputs.translated-text }}
+          ZH_CN: ${{ steps.translate-zh-cn.outputs.translated-text }}
+          JA: ${{ steps.translate-ja.outputs.translated-text }}
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
