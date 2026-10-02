@@ -1,6 +1,6 @@
 module github.com/chenwei791129/multiablo
 
-go 1.25.5
+go 1.27.1
 
 require (
 	fyne.io/fyne/v2 v2.7.2
