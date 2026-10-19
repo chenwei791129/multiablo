@@ -11,17 +11,16 @@ permissions:
 name: release-please
 
 jobs:
+  # Shared workflow: the pinned release-please SHA is maintained in
+  # chenwei791129/.github for every repository.
   release-please:
-    runs-on: ubuntu-26.04
-    outputs:
-      release_created: ${{ steps.release.outputs.release_created }}
-      tag_name: ${{ steps.release.outputs.tag_name }}
-    steps:
-      - uses: googleapis/release-please-action@v5
-        id: release
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          release-type: go
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    uses: chenwei791129/.github/.github/workflows/release-please.yml@main
+    with:
+      release-type: go
 
   # Call the shared build workflow
   build:
