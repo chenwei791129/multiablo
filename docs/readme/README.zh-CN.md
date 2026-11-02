@@ -1,6 +1,6 @@
 # D2R Multiablo - Diablo 2 重制版多实例工具
 
-[English](README.md) | [繁體中文](docs/readme/README.zh-TW.md) | [简体中文](docs/readme/README.zh-CN.md) | [日本語](docs/readme/README.ja.md)
+[English](../../README.md) | [繁體中文](README.zh-TW.md) | [简体中文](README.zh-CN.md) | [日本語](README.ja.md)
 
 一个适用于 Windows 的 D2R（Diablo II: Resurrected）多实例辅助工具，使用 Go 语言编写。
 

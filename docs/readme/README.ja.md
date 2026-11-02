@@ -1,6 +1,6 @@
 # D2R Multiablo - Diablo 2 Resurrected マルチインスタンスツール
 
-[English](README.md) | [繁體中文](docs/readme/README.zh-TW.md) | [简体中文](docs/readme/README.zh-CN.md) | [日本語](docs/readme/README.ja.md)
+[English](../../README.md) | [繁體中文](README.zh-TW.md) | [简体中文](README.zh-CN.md) | [日本語](README.ja.md)
 
 Windows向けにGoで作成された、D2R（Diablo II: Resurrected）のマルチインスタンスヘルパーツールです。
 

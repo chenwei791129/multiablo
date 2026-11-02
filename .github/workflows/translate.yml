@@ -59,6 +59,8 @@ jobs:
           echo "$ZH_TW" > docs/readme/README.zh-TW.md
           echo "$ZH_CN" > docs/readme/README.zh-CN.md
           echo "$JA" > docs/readme/README.ja.md
+          # Root README links are relative to the repo root; rebase them for docs/readme/.
+          sed -i -e 's#](README\.md)#](../../README.md)#g' -e 's#](docs/readme/#](#g' docs/readme/README.*.md
           ls -la docs/readme/
         env:
           ZH_TW: ${{ steps.translate-zh-tw.outputs.translated-text }}

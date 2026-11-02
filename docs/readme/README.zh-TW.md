@@ -1,6 +1,6 @@
 # D2R Multiablo - Diablo 2 Resurrected 多開工具
 
-[English](README.md) | [繁體中文](docs/readme/README.zh-TW.md) | [简体中文](docs/readme/README.zh-CN.md) | [日本語](docs/readme/README.ja.md)
+[English](../../README.md) | [繁體中文](README.zh-TW.md) | [简体中文](README.zh-CN.md) | [日本語](README.ja.md)
 
 一款為 Windows 設計的 D2R (Diablo II: Resurrected) 多開輔助工具，使用 Go 語言編寫。
 
